@@ -2,6 +2,26 @@
 
 #pragma once
 
+#if defined(__LINEFOLLOWINGROBOT__)
+
+#include <avr/io.h>
+#define SENSOR_0_PIN PB4
+#define SENSOR_1_PIN PB1
+#define SENSOR_2_PIN PD5
+#define SENSOR_3_PIN PD4
+#define SENSOR_4_PIN PC5
+#define SENSOR_5_PIN PC4
+#define SENSOR_6_PIN PC3
+#define SENSOR_7_PIN PC2
+
+#define EMITOR_PIN PD2
+
+#define PB_MASK ((1 << SENSOR_0_PIN) | (1 << SENSOR_1_PIN))
+#define PD_MASK ((1 << SENSOR_2_PIN) | (1 << SENSOR_3_PIN))
+#define PC_MASK ((1 << SENSOR_4_PIN) | (1 << SENSOR_5_PIN) | (1 << SENSOR_6_PIN) | (1 << SENSOR_7_PIN))
+
+#endif
+
 #include <stdint.h>
 
 /// \brief Emitter behavior when taking readings.
@@ -11,54 +31,54 @@
 /// using a second-generation QTR or QTRX sensor with two emitter control pins
 /// and you specify both pins with setEmitterPins().
 enum class QTRReadMode : uint8_t {
-  /// Each reading is made without turning on the infrared (IR) emitters. The
-  /// reading represents ambient light levels near the sensor.
-  Off,
+    /// Each reading is made without turning on the infrared (IR) emitters. The
+    /// reading represents ambient light levels near the sensor.
+    Off,
 
-  /// Each reading is made with the emitters on. The reading is a measure of
-  /// reflectance.
-  On,
+    /// Each reading is made with the emitters on. The reading is a measure of
+    /// reflectance.
+    On,
 
-  /// For each sensor, a reading is made in both the on and off states. The
-  /// value returned is **on + max &minus; off**, where **on** and **off** are
-  /// the reading with the emitters on and off, respectively, and **max** is
-  /// the maximum possible sensor reading. This mode can reduce the amount of
-  /// interference from uneven ambient lighting.
-  OnAndOff,
+    /// For each sensor, a reading is made in both the on and off states. The
+    /// value returned is **on + max &minus; off**, where **on** and **off** are
+    /// the reading with the emitters on and off, respectively, and **max** is
+    /// the maximum possible sensor reading. This mode can reduce the amount of
+    /// interference from uneven ambient lighting.
+    OnAndOff,
 
-  /// The odd-numbered sensors are read with the odd-numbered emitters on, then
-  /// the even-numbered sensors are read with the even-numbered emitters on.
-  /// This mode can reduce interference between adjacent sensors, especially on
-  /// QTRX sensor boards. It is only usable with second-generation QTR and QTRX
-  /// sensor arrays that have two emitter control pins.
-  OddEven,
+    /// The odd-numbered sensors are read with the odd-numbered emitters on, then
+    /// the even-numbered sensors are read with the even-numbered emitters on.
+    /// This mode can reduce interference between adjacent sensors, especially on
+    /// QTRX sensor boards. It is only usable with second-generation QTR and QTRX
+    /// sensor arrays that have two emitter control pins.
+    OddEven,
 
-  /// The odd and even sensors are read separately with the respective emitters
-  /// on, then all sensors are read with emitters off and **on + max &minus;
-  /// off** is returned. (In other words, this mode combines OddEven and
-  /// OnAndOff.)
-  OddEvenAndOff,
+    /// The odd and even sensors are read separately with the respective emitters
+    /// on, then all sensors are read with emitters off and **on + max &minus;
+    /// off** is returned. (In other words, this mode combines OddEven and
+    /// OnAndOff.)
+    OddEvenAndOff,
 
-  /// Calling read() with this mode prevents it from automatically controlling
-  /// the emitters: they are left in their existing states, which allows manual
-  /// control of the emitters for testing and advanced use. Calibrating and
-  /// obtaining calibrated readings are not supported with this mode.
-  Manual
+    /// Calling read() with this mode prevents it from automatically controlling
+    /// the emitters: they are left in their existing states, which allows manual
+    /// control of the emitters for testing and advanced use. Calibrating and
+    /// obtaining calibrated readings are not supported with this mode.
+    Manual
 };
 
 /// Sensor types.
 enum class QTRType : uint8_t {
-  Undefined,
-  RC,
-  Analog
+    Undefined,
+    RC,
+    Analog
 };
 
 /// Emitters selected to turn on or off.
 enum class QTREmitters : uint8_t {
-  All,
-  Odd,
-  Even,
-  None
+    All,
+    Odd,
+    Even,
+    None
 };
 
 /// Represents an undefined emitter control pin.
@@ -78,10 +98,8 @@ const uint8_t QTRMaxSensors = 31;
 ///
 /// See \ref md_usage for an overview of how this library can be used and some
 /// example code.
-class QTRSensors
-{
-  public:
-
+class QTRSensors {
+public:
     QTRSensors() = default;
 
     ~QTRSensors();
@@ -129,7 +147,7 @@ class QTRSensors
     /// values to be reallocated and reinitialized the next time calibrate() is
     /// called (it sets `calibrationOn.initialized` and
     /// `calibrationOff.initialized` to false).
-    void setSensorPins(const uint8_t * pins, uint8_t sensorCount);
+    void setSensorPins(const uint8_t* pins, uint8_t sensorCount);
 
     /// \brief Sets the timeout for RC sensors.
     ///
@@ -266,7 +284,7 @@ class QTRSensors
     /// one is specified.
     ///
     /// See also getOddEmitterPin() and setEmitterPins().
-    uint8_t getEvenEmitterPin()  { return _evenEmitterPin; }
+    uint8_t getEvenEmitterPin() { return _evenEmitterPin; }
 
     /// \brief Specifies that the sensors are dimmable.
     ///
@@ -425,7 +443,7 @@ class QTRSensors
     /// 2500 &micro;s).
     ///
     /// See \ref md_usage for more information and example code.
-    void read(uint16_t * sensorValues, QTRReadMode mode = QTRReadMode::On);
+    void read(uint16_t* sensorValues, QTRReadMode mode = QTRReadMode::On);
 
     /// \brief Reads the sensors and provides calibrated values between 0 and
     /// 1000.
@@ -445,7 +463,7 @@ class QTRSensors
     /// differences in the sensors are accounted for automatically.
     ///
     /// See \ref md_usage for more information and example code.
-    void readCalibrated(uint16_t * sensorValues, QTRReadMode mode = QTRReadMode::On);
+    void readCalibrated(uint16_t* sensorValues, QTRReadMode mode = QTRReadMode::On);
 
     /// \brief Reads the sensors, provides calibrated values, and returns an
     /// estimated black line position.
@@ -488,9 +506,8 @@ class QTRSensors
     /// readLineWhite().
     ///
     /// See \ref md_usage for more information and example code.
-    uint16_t readLineBlack(uint16_t * sensorValues, QTRReadMode mode = QTRReadMode::On)
-    {
-      return readLinePrivate(sensorValues, mode, false);
+    uint16_t readLineBlack(uint16_t* sensorValues, QTRReadMode mode = QTRReadMode::On) {
+        return readLinePrivate(sensorValues, mode, false);
     }
 
     /// \brief Reads the sensors, provides calibrated values, and returns an
@@ -511,23 +528,20 @@ class QTRSensors
     /// readLineBlack().
     ///
     /// See \ref md_usage for more information and example code.
-    uint16_t readLineWhite(uint16_t * sensorValues, QTRReadMode mode = QTRReadMode::On)
-    {
-      return readLinePrivate(sensorValues, mode, true);
+    uint16_t readLineWhite(uint16_t* sensorValues, QTRReadMode mode = QTRReadMode::On) {
+        return readLinePrivate(sensorValues, mode, true);
     }
-
 
     /// \brief Stores sensor calibration data.
     ///
     /// See calibrate() and readCalibrated() for details.
-    struct CalibrationData
-    {
-      /// Whether array pointers have been allocated and initialized.
-      bool initialized = false;
-      /// Lowest readings seen during calibration.
-      uint16_t * minimum = nullptr;
-      /// Highest readings seen during calibration.
-      uint16_t * maximum = nullptr;
+    struct CalibrationData {
+        /// Whether array pointers have been allocated and initialized.
+        bool initialized = false;
+        /// Lowest readings seen during calibration.
+        uint16_t* minimum = nullptr;
+        /// Highest readings seen during calibration.
+        uint16_t* maximum = nullptr;
     };
 
     /// \name Calibration data
@@ -547,28 +561,27 @@ class QTRSensors
 
     /// \}
 
-  private:
-
+private:
     uint16_t emittersOnWithPin(uint8_t pin);
 
     // Handles the actual calibration, including (re)allocating and
     // initializing the storage for the calibration values if necessary.
-    void calibrateOnOrOff(CalibrationData & calibration, QTRReadMode mode);
+    void calibrateOnOrOff(CalibrationData& calibration, QTRReadMode mode);
 
-    void readPrivate(uint16_t * sensorValues, uint8_t start = 0, uint8_t step = 1);
+    void readPrivate(uint16_t* sensorValues, uint8_t start = 0, uint8_t step = 1);
 
-    uint16_t readLinePrivate(uint16_t * sensorValues, QTRReadMode mode, bool invertReadings);
+    uint16_t readLinePrivate(uint16_t* sensorValues, QTRReadMode mode, bool invertReadings);
 
     QTRType _type = QTRType::Undefined;
 
-    uint8_t * _sensorPins = nullptr;
+    uint8_t* _sensorPins = nullptr;
     uint8_t _sensorCount = 0;
 
-    uint16_t _timeout = QTRRCDefaultTimeout; // only used for RC sensors
-    uint16_t _maxValue = QTRRCDefaultTimeout; // the maximum value returned by readPrivate()
-    uint8_t _samplesPerSensor = 4; // only used for analog sensors
+    uint16_t _timeout = QTRRCDefaultTimeout;   // only used for RC sensors
+    uint16_t _maxValue = QTRRCDefaultTimeout;  // the maximum value returned by readPrivate()
+    uint8_t _samplesPerSensor = 4;             // only used for analog sensors
 
-    uint8_t _oddEmitterPin = QTRNoEmitterPin; // also used for single emitter pin
+    uint8_t _oddEmitterPin = QTRNoEmitterPin;  // also used for single emitter pin
     uint8_t _evenEmitterPin = QTRNoEmitterPin;
     uint8_t _emitterPinCount = 0;
 
